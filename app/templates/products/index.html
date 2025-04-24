@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Products - Marketplace{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h2>Products</h2>
+    </div>
+    <div class="col-md-4 text-end">
+        {% if current_user.is_authenticated %}
+            <a href="{{ url_for('products.new') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Sell Product
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h5>Filters</h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('products.search') }}" method="GET">
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select class="form-select" id="category" name="category">
+                            <option value="">All Categories</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="clothing">Clothing</option>
+                            <option value="books">Books</option>
+                            <option value="home">Home & Garden</option>
+                            <option value="sports">Sports</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="min_price" class="form-label">Min Price</label>
+                        <input type="number" class="form-control" id="min_price" name="min_price" min="0" step="0.01">
+                    </div>
+                    <div class="mb-3">
+                        <label for="max_price" class="form-label">Max Price</label>
+                        <input type="number" class="form-control" id="max_price" name="max_price" min="0" step="0.01">
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="row">
+            {% for product in products.items %}
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        {% if product.image_url %}
+                            <img src="{{ product.image_url }}" class="card-img-top" alt="{{ product.title }}">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/no-image.png') }}" class="card-img-top" alt="No image">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.title }}</h5>
+                            <p class="card-text text-truncate">{{ product.description }}</p>
+                            <p class="card-text"><strong>${{ "%.2f"|format(product.price) }}</strong></p>
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ url_for('products.show', id=product.id) }}" class="btn btn-primary">View Details</a>
+                                {% if current_user.is_authenticated and product.seller_id != current_user.id %}
+                                    <a href="{{ url_for('messages.new', product_id=product.id) }}" class="btn btn-outline-primary">
+                                        <i class="fas fa-envelope"></i> Contact
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="card-footer text-muted">
+                            <small>Posted {{ product.created_at.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        {% if products.pages > 1 %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if products.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('products.index', page=products.prev_num) }}">Previous</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for page_num in products.iter_pages(left_edge=2, left_current=2, right_current=2, right_edge=2) %}
+                        {% if page_num %}
+                            <li class="page-item {% if page_num == products.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('products.index', page=page_num) }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if products.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('products.index', page=products.next_num) }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

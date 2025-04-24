@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Messages - Marketplace{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Messages</h2>
+        <div class="list-group">
+            {% for message in messages %}
+                <a href="{{ url_for('messages.show', id=message.id) }}" class="list-group-item list-group-item-action {% if not message.is_read and message.recipient_id == current_user.id %}list-group-item-primary{% endif %}">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">
+                            {% if message.sender_id == current_user.id %}
+                                To: {{ message.recipient.username }}
+                            {% else %}
+                                From: {{ message.sender.username }}
+                            {% endif %}
+                        </h5>
+                        <small>{{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </div>
+                    <p class="mb-1 text-truncate">{{ message.content }}</p>
+                    <small>Product: {{ message.product.title }}</small>
+                </a>
+            {% else %}
+                <div class="alert alert-info">
+                    You have no messages yet.
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

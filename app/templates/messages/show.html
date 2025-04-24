@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Message - Marketplace{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3>Message</h3>
+                    <a href="{{ url_for('messages.index') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-arrow-left"></i> Back to Messages
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="mb-4">
+                    <h5>Product</h5>
+                    <p>
+                        <a href="{{ url_for('products.show', id=message.product.id) }}">
+                            {{ message.product.title }}
+                        </a>
+                    </p>
+                </div>
+                <div class="mb-4">
+                    <h5>From</h5>
+                    <p>{{ message.sender.username }}</p>
+                </div>
+                <div class="mb-4">
+                    <h5>To</h5>
+                    <p>{{ message.recipient.username }}</p>
+                </div>
+                <div class="mb-4">
+                    <h5>Date</h5>
+                    <p>{{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
+                <div class="mb-4">
+                    <h5>Message</h5>
+                    <p class="border p-3 rounded">{{ message.content }}</p>
+                </div>
+                
+                {% if message.recipient_id == current_user.id %}
+                    <div class="mt-4">
+                        <h5>Reply</h5>
+                        <form action="{{ url_for('messages.new', product_id=message.product.id) }}" method="POST">
+                            <div class="mb-3">
+                                <textarea class="form-control" name="content" rows="4" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Send Reply</button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

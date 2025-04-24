@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Marketplace{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Admin Dashboard</h2>
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Users</h5>
+                        <p class="card-text display-4">{{ users|length }}</p>
+                        <a href="{{ url_for('admin.users') }}" class="btn btn-light">Manage Users</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Products</h5>
+                        <p class="card-text display-4">{{ products|length }}</p>
+                        <a href="{{ url_for('admin.products') }}" class="btn btn-light">Manage Products</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-info text-white">
+                    <div class="card-body">
+                        <h5 class="card-title">Total Messages</h5>
+                        <p class="card-text display-4">{{ messages|length }}</p>
+                        <a href="{{ url_for('admin.messages') }}" class="btn btn-light">Manage Messages</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Recent Users</h4>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for user in users[:5] %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ user.username }}</h5>
+                                <small>{{ user.created_at.strftime('%Y-%m-%d') }}</small>
+                            </div>
+                            <p class="mb-1">{{ user.email }}</p>
+                            <small>
+                                {% if user.is_admin %}
+                                    <span class="badge bg-primary">Admin</span>
+                                {% endif %}
+                                {% if user.is_blocked %}
+                                    <span class="badge bg-danger">Blocked</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Recent Products</h4>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for product in products[:5] %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ product.title }}</h5>
+                                <small>${{ "%.2f"|format(product.price) }}</small>
+                            </div>
+                            <p class="mb-1">By {{ product.seller.username }}</p>
+                            <small>
+                                {% if product.is_blocked %}
+                                    <span class="badge bg-danger">Blocked</span>
+                                {% endif %}
+                                {% if product.is_sold %}
+                                    <span class="badge bg-success">Sold</span>
+                                {% endif %}
+                            </small>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
